@@ -3,8 +3,9 @@ import { useTheme } from "../context/ThemeContext";
 import CustomDropdown from "./CustomDropdown";
 import PlantCard from "./PlantCard";
 import LoadingSpinner from "./LoadingSpinner";
-import "./PlantGrid.css";
 import Pagination from "./Pagination";
+import useDebounce from "../hooks/useDebounce";
+import "./PlantGrid.css";
 
 const PlantGrid = ({
   plants,
@@ -29,6 +30,9 @@ const PlantGrid = ({
   );
   const [sortBy, setSortBy] = useState("Newest First");
 
+  // Debounce the search query to avoid API calls on every keystroke
+  const debouncedSearchQuery = useDebounce(localSearchQuery, 500);
+
   // Sort options with descriptive labels
   const sortOptions = [
     "Newest First",
@@ -47,10 +51,17 @@ const PlantGrid = ({
     setLocalSelectedCategory(selectedCategory || "All Categories");
   }, [selectedCategory]);
 
+  // Only trigger search when debounced value changes
+  useEffect(() => {
+    if (debouncedSearchQuery !== searchQuery) {
+      onSearch?.(debouncedSearchQuery);
+    }
+  }, [debouncedSearchQuery, onSearch, searchQuery]);
+
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setLocalSearchQuery(query);
-    onSearch?.(query);
+    // Remove the immediate onSearch call - let debounce handle it
   };
 
   const handleCategoryChange = (category) => {

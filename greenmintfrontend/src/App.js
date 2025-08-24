@@ -201,15 +201,20 @@ function AppContent() {
     [fetchPlants, searchQuery, selectedCategory, apiClient]
   );
 
-  // Handle search
+  // Handle search with debouncing
   const handleSearch = useCallback(
     (query) => {
       console.log("🔍 Searching for:", query);
       setSearchQuery(query);
-      fetchPlants({
-        search: query,
-        category: selectedCategory,
-      });
+      // Reset to page 1 when searching
+      setCurrentPage(1);
+      fetchPlants(
+        {
+          search: query,
+          category: selectedCategory,
+        },
+        1
+      ); // Always fetch page 1 when searching
     },
     [fetchPlants, selectedCategory]
   );
@@ -219,10 +224,15 @@ function AppContent() {
     (category) => {
       console.log("📁 Category changed to:", category);
       setSelectedCategory(category);
-      fetchPlants({
-        search: searchQuery,
-        category: category,
-      });
+      // Reset to page 1 when changing category
+      setCurrentPage(1);
+      fetchPlants(
+        {
+          search: searchQuery,
+          category: category,
+        },
+        1
+      ); // Always fetch page 1 when changing category
     },
     [fetchPlants, searchQuery]
   );
