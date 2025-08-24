@@ -1,20 +1,29 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-import { ThemeProvider } from './context/ThemeContext';
-import { AuthProvider } from './context/AuthContext';
-import { CartProvider } from './context/CartContext';
-import Header from './components/Header';
-import PlantGrid from './components/PlantGrid';
-import AddPlantModal from './components/AddPlantModal';
-import LoadingSpinner from './components/LoadingSpinner';
-import ErrorMessage from './components/ErrorMessage';
-import Banner from './components/Banner';
-import './App.css';
+import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
+import { ThemeProvider } from "./context/ThemeContext";
+import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
+import Header from "./components/Header";
+import PlantGrid from "./components/PlantGrid";
+import AddPlantModal from "./components/AddPlantModal";
+import LoadingSpinner from "./components/LoadingSpinner";
+import ErrorMessage from "./components/ErrorMessage";
+import Banner from "./components/Banner";
+import Pagination from "./components/Pagination";
+import Footer from "./components/Footer";
+import "./App.css";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 const DEFAULT_CATEGORIES = [
-  'Indoor', 'Outdoor', 'Succulent', 'Air Purifying', 
-  'Home Decor', 'Low Maintenance', 'Flowering', 'Medicinal'
+  "Indoor",
+  "Outdoor",
+  "Succulent",
+  "Air Purifying",
+  "Home Decor",
+  "Low Maintenance",
+  "Flowering",
+  "Medicinal",
 ];
 
 function AppContent() {
@@ -23,15 +32,19 @@ function AppContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All Categories');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [hasPrevPage, setHasPrevPage] = useState(false);
 
   // Create axios instance with increased timeout
   const apiClient = axios.create({
     baseURL: API_BASE_URL,
     timeout: 30000, // Increased to 30 seconds
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 
@@ -39,170 +52,215 @@ function AppContent() {
   apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
-      if (error.code === 'ECONNABORTED') {
-        console.error('Request timeout - server may be slow');
-        return Promise.reject(new Error('Request timeout. Server is taking too long to respond.'));
+      if (error.code === "ECONNABORTED") {
+        console.error("Request timeout - server may be slow");
+        return Promise.reject(
+          new Error("Request timeout. Server is taking too long to respond.")
+        );
       }
       if (error.response?.status === 404) {
-        return Promise.reject(new Error('API endpoint not found. Check your server URL.'));
+        return Promise.reject(
+          new Error("API endpoint not found. Check your server URL.")
+        );
       }
       if (error.response?.status >= 500) {
-        return Promise.reject(new Error('Server error. Please try again later.'));
+        return Promise.reject(
+          new Error("Server error. Please try again later.")
+        );
       }
       return Promise.reject(error);
     }
   );
 
   // Simplified fetch plants function
-  const fetchPlants = useCallback(async (filters = {}) => {
-    try {
-      console.log('🌱 Fetching plants...');
-      setLoading(true);
-      setError(null);
+  const fetchPlants = useCallback(
+    async (filters = {}, page = 1) => {
+      try {
+        console.log("🌱 Fetching plants...");
+        setLoading(true);
+        setError(null);
 
-      // Build query parameters
-      const params = new URLSearchParams();
-      if (filters.search && filters.search.trim()) {
-        params.append('search', filters.search.trim());
-      }
-      if (filters.category && filters.category !== 'All Categories') {
-        params.append('category', filters.category);
-      }
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (filters.search && filters.search.trim()) {
+          params.append("search", filters.search.trim());
+        }
+        if (filters.category && filters.category !== "All Categories") {
+          params.append("category", filters.category);
+        }
+        params.append("page", page);
+        params.append("limit", 12); // 12 plants per page
 
-      const endpoint = `/plants${params.toString() ? `?${params.toString()}` : ''}`;
-      console.log(`📡 Making request to: ${API_BASE_URL}${endpoint}`);
-      
-      const response = await apiClient.get(endpoint);
-      console.log('✅ Response received:', response.status);
+        const endpoint = `/plants?${params.toString()}`;
+        console.log(`📡 Making request to: ${API_BASE_URL}${endpoint}`);
 
-      if (response.data && response.data.success) {
-        const plantsData = Array.isArray(response.data.data) ? response.data.data : [];
-        console.log(`📊 Plants data length: ${plantsData.length}`);
-        
-        // Sanitize plant data
-        const sanitizedPlants = plantsData.map(plant => ({
-          _id: plant._id || `temp-${Date.now()}-${Math.random()}`,
-          name: plant.name || 'Unknown Plant',
-          price: Number(plant.price) || 0,
-          description: plant.description || '',
-          categories: Array.isArray(plant.categories) ? plant.categories : [],
-          availability: Boolean(plant.availability),
-          stockCount: Number(plant.stockCount) || 0,
-          image: plant.image || '',
-          createdAt: plant.createdAt || new Date().toISOString(),
-          updatedAt: plant.updatedAt || new Date().toISOString()
-        }));
+        const response = await apiClient.get(endpoint);
+        console.log("✅ Response received:", response.status);
 
-        setPlants(sanitizedPlants);
-        console.log(`✅ Successfully loaded ${sanitizedPlants.length} plants`);
-      } else {
-        throw new Error(response.data?.error || 'Invalid response format');
+        if (response.data && response.data.success) {
+          const plantsData = Array.isArray(response.data.data)
+            ? response.data.data
+            : [];
+          console.log(`📊 Plants data length: ${plantsData.length}`);
+
+          // Update pagination state
+          setCurrentPage(response.data.currentPage || 1);
+          setTotalPages(response.data.totalPages || 1);
+          setHasNextPage(response.data.hasNextPage || false);
+          setHasPrevPage(response.data.hasPrevPage || false);
+
+          // Sanitize plant data
+          const sanitizedPlants = plantsData.map((plant) => ({
+            _id: plant._id || `temp-${Date.now()}-${Math.random()}`,
+            name: plant.name || "Unknown Plant",
+            price: Number(plant.price) || 0,
+            description: plant.description || "",
+            categories: Array.isArray(plant.categories) ? plant.categories : [],
+            availability: Boolean(plant.availability),
+            stockCount: Number(plant.stockCount) || 0,
+            image: plant.image || "",
+            createdAt: plant.createdAt || new Date().toISOString(),
+            updatedAt: plant.updatedAt || new Date().toISOString(),
+          }));
+
+          setPlants(sanitizedPlants);
+          console.log(
+            `✅ Successfully loaded ${sanitizedPlants.length} plants`
+          );
+        } else {
+          throw new Error(response.data?.error || "Invalid response format");
+        }
+      } catch (err) {
+        console.error("❌ Error fetching plants:", err);
+        const errorMessage = err.message || "Failed to fetch plants";
+        setError(errorMessage);
+
+        // Don't clear existing plants on error
+        if (plants.length === 0) {
+          setPlants([]);
+        }
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error('❌ Error fetching plants:', err);
-      const errorMessage = err.message || 'Failed to fetch plants';
-      setError(errorMessage);
-      
-      // Don't clear existing plants on error
-      if (plants.length === 0) {
-        setPlants([]);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [apiClient]);
+    },
+    [apiClient]
+  );
 
   // Fetch categories with better error handling
   const fetchCategories = useCallback(async () => {
     try {
-      console.log('📂 Fetching categories...');
-      const response = await apiClient.get('/categories');
+      console.log("📂 Fetching categories...");
+      const response = await apiClient.get("/categories");
 
       if (response.data && response.data.success) {
-        const categoriesData = Array.isArray(response.data.data) ? response.data.data : [];
-        const validCategories = categoriesData.filter(cat => 
-          cat && typeof cat === 'string' && cat.trim()
+        const categoriesData = Array.isArray(response.data.data)
+          ? response.data.data
+          : [];
+        const validCategories = categoriesData.filter(
+          (cat) => cat && typeof cat === "string" && cat.trim()
         );
-        setCategories(validCategories.length > 0 ? validCategories : DEFAULT_CATEGORIES);
-        console.log('✅ Categories loaded:', validCategories.length);
+        setCategories(
+          validCategories.length > 0 ? validCategories : DEFAULT_CATEGORIES
+        );
+        console.log("✅ Categories loaded:", validCategories.length);
       } else {
-        throw new Error('Invalid categories response');
+        throw new Error("Invalid categories response");
       }
     } catch (err) {
-      console.warn('⚠️ Failed to fetch categories, using defaults:', err.message);
+      console.warn(
+        "⚠️ Failed to fetch categories, using defaults:",
+        err.message
+      );
       setCategories(DEFAULT_CATEGORIES);
     }
   }, [apiClient]);
 
   // Handle plant addition
-  const handlePlantAdded = useCallback(async (plantData) => {
-    try {
-      console.log('➕ Adding new plant...');
-      const response = await apiClient.post('/plants', plantData);
-      
-      if (response.data && response.data.success) {
-        console.log('✅ Plant added successfully');
-        await fetchPlants({
-          search: searchQuery,
-          category: selectedCategory
-        });
-        setShowAddModal(false);
-        alert('Plant added successfully!');
-      } else {
-        throw new Error(response.data?.error || 'Failed to add plant');
+  const handlePlantAdded = useCallback(
+    async (plantData) => {
+      try {
+        console.log("➕ Adding new plant...");
+        const response = await apiClient.post("/plants", plantData);
+
+        if (response.data && response.data.success) {
+          console.log("✅ Plant added successfully");
+          await fetchPlants({
+            search: searchQuery,
+            category: selectedCategory,
+          });
+          setShowAddModal(false);
+          alert("Plant added successfully!");
+        } else {
+          throw new Error(response.data?.error || "Failed to add plant");
+        }
+      } catch (err) {
+        console.error("❌ Error adding plant:", err);
+        throw err;
       }
-    } catch (err) {
-      console.error('❌ Error adding plant:', err);
-      throw err;
-    }
-  }, [fetchPlants, searchQuery, selectedCategory, apiClient]);
+    },
+    [fetchPlants, searchQuery, selectedCategory, apiClient]
+  );
 
   // Handle search
-  const handleSearch = useCallback((query) => {
-    console.log('🔍 Searching for:', query);
-    setSearchQuery(query);
-    fetchPlants({
-      search: query,
-      category: selectedCategory
-    });
-  }, [fetchPlants, selectedCategory]);
+  const handleSearch = useCallback(
+    (query) => {
+      console.log("🔍 Searching for:", query);
+      setSearchQuery(query);
+      fetchPlants({
+        search: query,
+        category: selectedCategory,
+      });
+    },
+    [fetchPlants, selectedCategory]
+  );
 
   // Handle category change
-  const handleCategoryChange = useCallback((category) => {
-    console.log('📁 Category changed to:', category);
-    setSelectedCategory(category);
-    fetchPlants({
-      search: searchQuery,
-      category: category
-    });
-  }, [fetchPlants, searchQuery]);
+  const handleCategoryChange = useCallback(
+    (category) => {
+      console.log("📁 Category changed to:", category);
+      setSelectedCategory(category);
+      fetchPlants({
+        search: searchQuery,
+        category: category,
+      });
+    },
+    [fetchPlants, searchQuery]
+  );
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    fetchPlants({ search: searchQuery, category: selectedCategory }, page);
+  };
 
   // Retry function
   const handleRetry = useCallback(() => {
-    console.log('🔄 Retrying...');
+    console.log("🔄 Retrying...");
     setError(null);
     fetchPlants({
       search: searchQuery,
-      category: selectedCategory
+      category: selectedCategory,
     });
   }, [fetchPlants, searchQuery, selectedCategory]);
 
   // Initialize app data
   useEffect(() => {
     const initializeApp = async () => {
-      console.log('🚀 Initializing app...');
+      console.log("🚀 Initializing app...");
       try {
         setLoading(true);
         setError(null);
-        
+
         // Fetch data in sequence to avoid overwhelming the server
         await fetchPlants();
         await fetchCategories();
-        
-        console.log('✅ App initialized successfully');
+
+        console.log("✅ App initialized successfully");
       } catch (err) {
-        console.error('❌ Error initializing app:', err);
-        setError('Failed to initialize application. Please check your connection and try again.');
+        console.error("❌ Error initializing app:", err);
+        setError(
+          "Failed to initialize application. Please check your connection and try again."
+        );
       } finally {
         setLoading(false);
       }
@@ -213,13 +271,13 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header 
+      <Header
         showAddForm={showAddModal}
         setShowAddForm={setShowAddModal}
         plants={plants}
       />
-      
-      <Banner 
+
+      <Banner
         onSearch={handleSearch}
         onCategoryFilter={handleCategoryChange}
         categories={categories}
@@ -232,12 +290,22 @@ function AppContent() {
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  <svg
+                    className="h-5 w-5 text-red-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">Error Loading Plants</h3>
+                  <h3 className="text-sm font-medium text-red-800">
+                    Error Loading Plants
+                  </h3>
                   <div className="mt-2 text-sm text-red-700">
                     <p>{error}</p>
                   </div>
@@ -268,13 +336,20 @@ function AppContent() {
         {/* Plant Grid */}
         {!loading && !error && (
           <section id="plants-section">
-            <PlantGrid 
+            <PlantGrid
               plants={plants}
               searchQuery={searchQuery}
               selectedCategory={selectedCategory}
               onSearch={handleSearch}
               onCategoryChange={handleCategoryChange}
               categories={categories}
+              loading={loading}
+              error={error}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              hasNextPage={hasNextPage}
+              hasPrevPage={hasPrevPage}
+              onPageChange={handlePageChange}
             />
           </section>
         )}
@@ -285,16 +360,27 @@ function AppContent() {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
               <div className="bg-white rounded-lg shadow-sm p-8">
                 <div className="text-gray-400 mb-4">
-                  <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" 
-                          d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                  <svg
+                    className="w-16 h-16 mx-auto"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1"
+                      d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                    />
                   </svg>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No plants available</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No plants available
+                </h3>
                 <p className="text-gray-500 mb-4">
                   It looks like there are no plants in the catalog yet.
                 </p>
-                <button 
+                <button
                   onClick={() => setShowAddModal(true)}
                   className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200"
                 >
@@ -312,6 +398,7 @@ function AppContent() {
         onSubmit={handlePlantAdded}
         categories={categories}
       />
+      <Footer />
     </div>
   );
 }
