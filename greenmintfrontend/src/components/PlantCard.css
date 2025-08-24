@@ -1,29 +1,112 @@
-/* PlantCard.css - Complete card styling */
+/* ===================================
+   CSS VARIABLES
+   =================================== */
+:root {
+  --card-bg: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.05);
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+  --card-shadow-hover: 0 20px 25px rgba(0, 0, 0, 0.1),
+    0 10px 10px rgba(0, 0, 0, 0.04);
+
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --text-muted: #9ca3af;
+
+  --border-light: #f3f4f6;
+  --border-medium: #e5e7eb;
+
+  --star-filled: #fbbf24;
+  --star-empty: #d1d5db;
+
+  --category-bg: #f0fdf4;
+  --category-color: #15803d;
+  --category-border: #bbf7d0;
+
+  --price-color: #111827;
+  --price-unit-color: #6b7280;
+
+  --btn-primary-bg: #22c55e;
+  --btn-primary-hover: #16a34a;
+  --btn-primary-text: #ffffff;
+
+  --btn-secondary-bg: #f3f4f6;
+  --btn-secondary-hover: #e5e7eb;
+  --btn-secondary-text: #374151;
+
+  --success-bg: #22c55e;
+  --success-text: #ffffff;
+
+  --error-bg: #ef4444;
+  --error-text: #ffffff;
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+  --card-bg: #1f2937;
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+  --card-shadow-hover: 0 20px 25px rgba(0, 0, 0, 0.4),
+    0 10px 10px rgba(0, 0, 0, 0.2);
+
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-tertiary: #9ca3af;
+  --text-muted: #6b7280;
+
+  --border-light: #374151;
+  --border-medium: #4b5563;
+
+  --star-filled: #fbbf24;
+  --star-empty: #6b7280;
+
+  --category-bg: rgba(34, 197, 94, 0.1);
+  --category-color: #22c55e;
+  --category-border: rgba(34, 197, 94, 0.3);
+
+  --price-color: #f9fafb;
+  --price-unit-color: #9ca3af;
+
+  --btn-primary-bg: #22c55e;
+  --btn-primary-hover: #16a34a;
+  --btn-primary-text: #ffffff;
+
+  --btn-secondary-bg: #374151;
+  --btn-secondary-hover: #4b5563;
+  --btn-secondary-text: #d1d5db;
+}
+
+/* ===================================
+   CARD CONTAINER
+   =================================== */
 .plant-card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--card-shadow);
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--card-border);
   display: flex;
   flex-direction: column;
   height: 100%;
+  position: relative;
 }
 
 .plant-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--card-shadow-hover);
   border-color: rgba(34, 197, 94, 0.2);
 }
 
-/* Image Container */
+/* ===================================
+   IMAGE SECTION
+   =================================== */
 .plant-image-container {
   position: relative;
   width: 100%;
   height: 200px;
   overflow: hidden;
-  background: #f8fafc;
+  background: var(--bg-secondary, #f8fafc);
 }
 
 .plant-image,
@@ -65,36 +148,123 @@
 .placeholder-name {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--text-secondary);
   text-align: center;
   padding: 0 0.5rem;
 }
 
-/* Availability Badge */
+/* ===================================
+   AVAILABILITY BADGE
+   =================================== */
 .availability-badge {
   position: absolute;
   top: 12px;
   left: 12px;
-  padding: 0.25rem 0.75rem;
+  padding: 0.375rem 0.75rem;
   border-radius: 20px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.025em;
   z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-family: "Poppins", sans-serif;
 }
 
 .availability-badge.in-stock {
-  background: #22c55e;
-  color: white;
+  background: var(--success-bg);
+  color: var(--success-text);
 }
 
 .availability-badge.out-of-stock {
-  background: #ef4444;
-  color: white;
+  background: var(--error-bg);
+  color: var(--error-text);
 }
 
-/* Content Section */
+/* ===================================
+   QUICK ACTIONS
+   =================================== */
+.quick-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.quick-action-btn {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.quick-action-btn:hover {
+  background: white;
+  color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+/* ===================================
+   SUCCESS OVERLAY
+   =================================== */
+.success-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(34, 197, 94, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  animation: successFadeIn 0.3s ease;
+}
+
+.success-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  text-align: center;
+}
+
+.success-icon {
+  width: 48px;
+  height: 48px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--success-bg);
+  font-weight: bold;
+}
+
+@keyframes successFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===================================
+   CONTENT SECTION
+   =================================== */
 .plant-content {
   padding: 1.25rem;
   display: flex;
@@ -110,11 +280,11 @@
 .plant-name {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   margin: 0 0 0.5rem 0;
   line-height: 1.4;
   display: -webkit-box;
-  font-family: Poppins;
+  font-family: "Poppins", sans-serif;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -128,30 +298,35 @@
 
 .stars {
   display: flex;
-  gap: 1px;
+  gap: 2px;
 }
 
 .star {
-  color: #d1d5db;
-  font-size: 0.875rem;
+  color: var(--star-empty);
+  transition: color 0.2s ease;
 }
 
 .star.filled {
-  color: #fbbf24;
+  color: var(--star-filled);
+}
+
+.star.half-filled {
+  color: var(--star-filled);
+  opacity: 0.7;
 }
 
 .rating-count {
   font-size: 0.75rem;
-  color: #9ca3af;
-  
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 /* Description */
 .plant-description {
-  color: #6b7280;
+  color: var(--text-secondary);
   font-size: 0.875rem;
   line-height: 1.5;
-  font-family: Poppins;
+  font-family: "Poppins", sans-serif;
   margin-bottom: 0.75rem;
   flex-grow: 1;
   display: -webkit-box;
@@ -169,107 +344,130 @@
 }
 
 .category-tag {
-  padding: 0.25rem 0.5rem;
-  background: #f0fdf4;
-  color: #15803d;
-  border: 1px solid #bbf7d0;
+  padding: 0.375rem 0.75rem;
+  background: var(--category-bg);
+  color: var(--category-color);
+  border: 1px solid var(--category-border);
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 500;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.2s ease;
+}
+
+.category-tag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .category-tag.more {
-  background: #f3f4f6;
-  color: #6b7280;
-  border-color: #d1d5db;
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border-color: var(--border-medium);
 }
 
-/* Footer */
+/* ===================================
+   FOOTER
+   =================================== */
 .plant-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--border-light);
   margin-top: auto;
 }
 
 .price-section {
   display: flex;
   flex-direction: column;
+  gap: 0.25rem;
 }
 
 .price {
-  font-size: 1.5rem;
-  font-family: Poppins;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #111827;
-  line-height: 1.2;
+  color: var(--price-color);
+  font-family: "Poppins", sans-serif;
 }
 
 .price-unit {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--price-unit-color);
+  font-weight: 500;
 }
 
-/* Add to Cart Button */
+/* ===================================
+   BUTTONS
+   =================================== */
 .add-to-cart-btn {
-  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
   border: none;
-  border-radius: 8px;
-  font-size: 0.875rem;
+  border-radius: 12px;
   font-weight: 600;
+  font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  white-space: nowrap;
+  font-family: "Poppins", sans-serif;
+  min-width: 120px;
+  justify-content: center;
 }
 
 .add-to-cart-btn.available {
-  background: #22c55e;
-  color: white;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
 }
 
 .add-to-cart-btn.available:hover {
-  background: #16a34a;
-  transform: translateY(-1px);
+  background: var(--btn-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
 .add-to-cart-btn.unavailable {
-  background: #f3f4f6;
-  color: #9ca3af;
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
   cursor: not-allowed;
+}
+
+.add-to-cart-btn.unavailable:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 /* Quantity Controls */
 .quantity-controls {
   display: flex;
   align-items: center;
-  background: #f8fafc;
-  border-radius: 8px;
+  gap: 0.5rem;
+  background: var(--btn-secondary-bg);
+  border-radius: 12px;
   padding: 0.25rem;
-  gap: 0.25rem;
+  border: 1px solid var(--border-medium);
 }
 
 .quantity-btn {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
+  background: var(--card-bg);
   border: none;
-  background: white;
-  border-radius: 6px;
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  font-weight: 600;
-  font-family: Poppins;
   transition: all 0.2s ease;
-  color: #6b7280;
+  font-weight: 600;
 }
 
 .quantity-btn:hover:not(:disabled) {
-  background: #22c55e;
-  color: white;
+  background: var(--btn-secondary-hover);
+  transform: scale(1.05);
 }
 
 .quantity-btn:disabled {
@@ -281,100 +479,85 @@
   min-width: 24px;
   text-align: center;
   font-weight: 600;
-  color: #111827;
-  font-family: Poppins;
+  color: var(--text-primary);
   font-size: 0.875rem;
 }
 
-/* Success Animation */
-.success-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(34, 197, 94, 0.95);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  animation: successSlide 0.6s ease;
-  z-index: 20;
-}
-
-.success-content {
-  text-align: center;
-}
-
-.success-icon {
-  width: 48px;
-  height: 48px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 0.5rem;
-  font-size: 1.5rem;
-  font-family: Poppins;
-}
-
-@keyframes successSlide {
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Responsive Design */
+/* ===================================
+   RESPONSIVE DESIGN
+   =================================== */
 @media (max-width: 640px) {
   .plant-content {
     padding: 1rem;
   }
-  
-  .plant-footer {
-    flex-direction: column;
-    gap: 0.75rem;
-    align-items: stretch;
+
+  .plant-name {
+    font-size: 1rem;
   }
-  
+
+  .price {
+    font-size: 1.125rem;
+  }
+
   .add-to-cart-btn {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .quantity-controls {
-    justify-content: center;
+    min-width: 100px;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8rem;
   }
 }
 
 @media (max-width: 480px) {
   .plant-image-container {
-    height: 160px;
+    height: 180px;
   }
-  
-  .plant-name {
-    font-size: 1rem;
+
+  .plant-content {
+    padding: 0.875rem;
   }
-  
-  .price {
-    font-size: 1.25rem;
-  }
-  
+
   .plant-categories {
     gap: 0.25rem;
   }
-  
+
   .category-tag {
+    padding: 0.25rem 0.5rem;
     font-size: 0.7rem;
-    padding: 0.2rem 0.4rem;
   }
+}
+
+/* ===================================
+   THEME TRANSITIONS
+   =================================== */
+.plant-card * {
+  transition: color 0.2s ease, background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* ===================================
+   ACCESSIBILITY
+   =================================== */
+@media (prefers-reduced-motion: reduce) {
+  .plant-card,
+  .plant-image,
+  .add-to-cart-btn,
+  .quantity-btn {
+    transition: none;
+  }
+
+  .plant-card:hover {
+    transform: none;
+  }
+}
+
+/* Focus styles for keyboard navigation */
+.plant-card:focus-within {
+  outline: 2px solid var(--btn-primary-bg);
+  outline-offset: 2px;
+}
+
+.add-to-cart-btn:focus-visible,
+.quantity-btn:focus-visible,
+.quick-action-btn:focus-visible {
+  outline: 2px solid var(--btn-primary-bg);
+  outline-offset: 2px;
 }

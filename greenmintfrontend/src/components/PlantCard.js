@@ -1,29 +1,37 @@
-import React, { useState } from 'react';
-import { useCart } from '../context/CartContext';
-import './PlantCard.css';
+import React, { useState } from "react";
+import { useCart } from "../context/CartContext";
+import { useTheme } from "../context/ThemeContext";
+import { Star, Heart, Share2, Plus, Minus, ShoppingCart } from "lucide-react";
+import "./PlantCard.css";
 
 const PlantCard = ({ plant }) => {
   const { addToCart, getItemQuantity, updateQuantity, isInCart } = useCart();
+  const { theme, isDark } = useTheme();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
   if (!plant) return null;
 
-  const plantName = plant.name || 'Unknown Plant';
+  const plantName = plant.name || "Unknown Plant";
   const plantPrice = plant.price || 0;
-  const plantDescription = plant.description || '';
-  const plantCategories = Array.isArray(plant.categories) ? plant.categories : [];
+  const plantDescription = plant.description || "";
+  const plantCategories = Array.isArray(plant.categories)
+    ? plant.categories
+    : [];
   const plantAvailability = Boolean(plant.availability);
+  const plantRating = plant.rating || 4.8;
 
   const quantity = getItemQuantity(plant._id) || 0;
   const inCart = isInCart(plant._id);
 
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
-    if (imagePath.startsWith('http')) return imagePath;
-    if (imagePath.startsWith('/uploads/')) return `http://localhost:5000${imagePath}`;
-    if (imagePath.includes('uploads/')) return `http://localhost:5000/${imagePath}`;
+    if (imagePath.startsWith("http")) return imagePath;
+    if (imagePath.startsWith("/uploads/"))
+      return `http://localhost:5000${imagePath}`;
+    if (imagePath.includes("uploads/"))
+      return `http://localhost:5000/${imagePath}`;
     return null;
   };
 
@@ -36,7 +44,7 @@ const PlantCard = ({ plant }) => {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);
     } catch (error) {
-      console.error('Error adding to cart:', error);
+      console.error("Error adding to cart:", error);
     }
   };
 
@@ -44,19 +52,24 @@ const PlantCard = ({ plant }) => {
     try {
       updateQuantity(plant._id, Math.max(0, newQuantity));
     } catch (error) {
-      console.error('Error updating quantity:', error);
+      console.error("Error updating quantity:", error);
     }
   };
 
+  // Calculate rating display
+  const fullStars = Math.floor(plantRating);
+  const hasHalfStar = plantRating % 1 >= 0.5;
+  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
   return (
-    <article className="plant-card">
+    <article className={`plant-card ${theme}`}>
       {/* Image Section */}
       <div className="plant-image-container">
         {imageUrl && !imageError ? (
           <img
             src={imageUrl}
             alt={plantName}
-            className={`plant-image ${imageLoaded ? 'loaded' : ''}`}
+            className={`plant-image ${imageLoaded ? "loaded" : ""}`}
             onLoad={() => setImageLoaded(true)}
             onError={() => setImageError(true)}
             loading="lazy"
@@ -69,7 +82,7 @@ const PlantCard = ({ plant }) => {
             <span className="placeholder-name">{plantName}</span>
           </div>
         )}
-        
+
         {/* Success Animation */}
         {showSuccess && (
           <div className="success-overlay">
@@ -81,23 +94,21 @@ const PlantCard = ({ plant }) => {
         )}
 
         {/* Availability Badge */}
-        <div className={`availability-badge ${plantAvailability ? 'in-stock' : 'out-of-stock'}`}>
-          {plantAvailability ? 'In Stock' : 'Out of Stock'}
+        <div
+          className={`availability-badge ${
+            plantAvailability ? "in-stock" : "out-of-stock"
+          }`}
+        >
+          {plantAvailability ? "IN STOCK" : "OUT OF STOCK"}
         </div>
 
         {/* Quick Actions */}
         <div className="quick-actions">
           <button className="quick-action-btn" title="Add to wishlist">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
+            <Heart size={16} />
           </button>
           <button className="quick-action-btn" title="Share">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-            </svg>
+            <Share2 size={16} />
           </button>
         </div>
       </div>
@@ -109,19 +120,27 @@ const PlantCard = ({ plant }) => {
           <h3 className="plant-name">{plantName}</h3>
           <div className="plant-rating">
             <div className="stars">
-              {[1, 2, 3, 4, 5].map(star => (
-                <span key={star} className={`star ${star <= 4 ? 'filled' : ''}`}>
-                  ★
-                </span>
+              {/* Full stars */}
+              {Array.from({ length: fullStars }, (_, i) => (
+                <Star key={`full-${i}`} size={16} className="star filled" />
+              ))}
+              {/* Half star */}
+              {hasHalfStar && (
+                <Star key="half" size={16} className="star half-filled" />
+              )}
+              {/* Empty stars */}
+              {Array.from({ length: emptyStars }, (_, i) => (
+                <Star key={`empty-${i}`} size={16} className="star empty" />
               ))}
             </div>
-            <span className="rating-count">(4.8)</span>
+            <span className="rating-count">({plantRating})</span>
           </div>
         </div>
 
         {/* Description */}
         <p className="plant-description">
-          {plantDescription || 'Beautiful plant perfect for your home and garden.'}
+          {plantDescription ||
+            "Beautiful plant perfect for your home and garden."}
         </p>
 
         {/* Categories */}
@@ -151,9 +170,12 @@ const PlantCard = ({ plant }) => {
             <button
               onClick={handleAddToCart}
               disabled={!plantAvailability}
-              className={`add-to-cart-btn ${plantAvailability ? 'available' : 'unavailable'}`}
+              className={`add-to-cart-btn ${
+                plantAvailability ? "available" : "unavailable"
+              }`}
             >
-              {plantAvailability ? 'Add to Cart' : 'Out of Stock'}
+              <ShoppingCart size={16} />
+              <span>{plantAvailability ? "Add to Cart" : "Out of Stock"}</span>
             </button>
           ) : (
             <div className="quantity-controls">
@@ -161,15 +183,17 @@ const PlantCard = ({ plant }) => {
                 onClick={() => handleQuantityChange(quantity - 1)}
                 className="quantity-btn"
                 disabled={quantity <= 0}
+                aria-label="Decrease quantity"
               >
-                −
+                <Minus size={14} />
               </button>
               <span className="quantity-display">{quantity}</span>
               <button
                 onClick={() => handleQuantityChange(quantity + 1)}
                 className="quantity-btn"
+                aria-label="Increase quantity"
               >
-                +
+                <Plus size={14} />
               </button>
             </div>
           )}
