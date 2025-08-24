@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
-import CartSidebar from './CartSidebar';
-import LoginModal from './LoginModal';
-import './Header.css';
+import React, { useState, useEffect } from "react";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
+import CartSidebar from "./CartSidebar";
+import LoginModal from "./LoginModal";
+import "./Header.css";
 
 const Header = ({ showAddForm, setShowAddForm, plants }) => {
   const { user, isAdmin, logout } = useAuth();
@@ -22,8 +22,8 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
       setIsScrolled(window.scrollY > 20);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Handle mobile detection and responsive behavior
@@ -31,7 +31,7 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
     const checkMobile = () => {
       const isMobileView = window.innerWidth <= 768;
       setIsMobile(isMobileView);
-      
+
       // Auto-close mobile menu when switching to desktop
       if (!isMobileView && isMobileMenuOpen) {
         setIsMobileMenuOpen(false);
@@ -40,33 +40,35 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
 
     // Check on component mount
     checkMobile();
-    
+
     // Add resize listener
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, [isMobileMenuOpen]);
 
   // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isMobileMenuOpen && 
-          !event.target.closest('.mobile-nav') && 
-          !event.target.closest('.mobile-toggle')) {
+      if (
+        isMobileMenuOpen &&
+        !event.target.closest(".mobile-nav") &&
+        !event.target.closest(".mobile-toggle")
+      ) {
         setIsMobileMenuOpen(false);
       }
     };
 
     if (isMobileMenuOpen) {
-      document.addEventListener('click', handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
       // Prevent body scroll when mobile menu is open
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     }
 
     return () => {
-      document.removeEventListener('click', handleClickOutside);
-      document.body.style.overflow = 'auto';
+      document.removeEventListener("click", handleClickOutside);
+      document.body.style.overflow = "auto";
     };
   }, [isMobileMenuOpen]);
 
@@ -85,10 +87,10 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start',
-        inline: 'nearest'
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest",
       });
     }
     setIsMobileMenuOpen(false);
@@ -108,28 +110,28 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
   // Dynamic admin button text based on state
   const getAdminButtonText = () => {
     if (!isAdmin()) {
-      return 'Admin';
+      return "Admin";
     }
-    return showAddForm ? 'Close Form' : 'Add Plant';
+    return showAddForm ? "Close Form" : "Add Plant";
   };
 
   // Dynamic mobile admin button text
   const getMobileAdminButtonText = () => {
     if (!isAdmin()) {
-      return 'Admin Login';
+      return "Admin Login";
     }
-    return showAddForm ? 'Close Form' : 'Add Plant';
+    return showAddForm ? "Close Form" : "Add Plant";
   };
 
   // Handle search functionality
   const handleSearchClick = () => {
     // Scroll to search section in banner
-    scrollToSection('plants-section');
+    scrollToSection("plants-section");
   };
 
   // Handle logout with confirmation
   const handleLogout = () => {
-    if (window.confirm('Are you sure you want to logout?')) {
+    if (window.confirm("Are you sure you want to logout?")) {
       logout();
       setIsMobileMenuOpen(false);
     }
@@ -138,17 +140,21 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
   return (
     <>
       {/* Main Header */}
-      <header className={`modern-header ${isScrolled ? 'header-scrolled' : ''} ${theme}`}>
+      <header
+        className={`modern-header ${
+          isScrolled ? "header-scrolled" : ""
+        } ${theme}`}
+      >
         <div className="header-container">
           {/* Logo Section */}
-          <div 
-            className="header-logo" 
-            onClick={() => scrollToSection('home')}
+          <div
+            className="header-logo"
+            onClick={() => scrollToSection("home")}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                scrollToSection('home');
+              if (e.key === "Enter" || e.key === " ") {
+                scrollToSection("home");
               }
             }}
           >
@@ -157,30 +163,30 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
 
           {/* Desktop Navigation */}
           <nav className="header-nav" role="navigation">
-            <button 
-              className="nav-button" 
-              onClick={() => scrollToSection('home')}
+            <button
+              className="nav-button"
+              onClick={() => scrollToSection("home")}
               type="button"
             >
               Home
             </button>
-            <button 
-              className="nav-button" 
-              onClick={() => scrollToSection('plants-section')}
+            <button
+              className="nav-button"
+              onClick={() => scrollToSection("plants-section")}
               type="button"
             >
               Products
             </button>
-            <button 
-              className="nav-button" 
-              onClick={() => scrollToSection('about')}
+            <button
+              className="nav-button"
+              onClick={() => scrollToSection("about")}
               type="button"
             >
               About
             </button>
-            <button 
-              className="nav-button" 
-              onClick={() => scrollToSection('contact')}
+            <button
+              className="nav-button"
+              onClick={() => scrollToSection("contact")}
               type="button"
             >
               Contact
@@ -190,104 +196,152 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
           {/* Header Actions */}
           <div className="header-actions">
             {/* Theme Toggle Button */}
-            <button 
-              className="action-btn theme-toggle" 
+            <button
+              className="action-btn theme-toggle"
               onClick={toggleTheme}
               type="button"
-              title={`Switch to ${isDark ? 'light' : 'dark'} theme`}
-              aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
+              title={`Switch to ${isDark ? "light" : "dark"} theme`}
+              aria-label={`Switch to ${isDark ? "light" : "dark"} theme`}
             >
               {isDark ? (
                 // Sun icon for light mode
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="5"/>
-                  <line x1="12" y1="1" x2="12" y2="3"/>
-                  <line x1="12" y1="21" x2="12" y2="23"/>
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                  <line x1="1" y1="12" x2="3" y2="12"/>
-                  <line x1="21" y1="12" x2="23" y2="12"/>
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                <svg
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                 </svg>
               ) : (
                 // Moon icon for dark mode
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                <svg
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
                 </svg>
               )}
             </button>
 
             {/* Search Button */}
-            <button 
-              className="action-btn search-btn" 
+            <button
+              className="action-btn search-btn"
               onClick={handleSearchClick}
               type="button"
               title="Search plants"
               aria-label="Search plants"
             >
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="m21 21-4.35-4.35"/>
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
               </svg>
             </button>
 
             {/* Cart Button */}
-            <button 
-              className="action-btn cart-btn" 
+            <button
+              className="action-btn cart-btn"
               onClick={() => setShowCart(true)}
               type="button"
               title={`Shopping cart - ${totalQuantity} items`}
               aria-label={`Shopping cart with ${totalQuantity} items`}
             >
               <div className="cart-icon-wrapper">
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                <svg
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                 </svg>
                 {totalQuantity > 0 && (
                   <span className="cart-badge" aria-hidden="true">
-                    {totalQuantity > 99 ? '99+' : totalQuantity}
+                    {totalQuantity > 99 ? "99+" : totalQuantity}
                   </span>
                 )}
               </div>
               {/* Cart preview tooltip */}
               {totalQuantity > 0 && (
                 <div className="cart-preview">
-                  <span className="cart-total">₹{cartTotal.toLocaleString()}</span>
+                  <span className="cart-total">
+                    ₹{cartTotal.toLocaleString()}
+                  </span>
                 </div>
               )}
             </button>
 
             {/* Account Button */}
-            <button 
-              className="action-btn account-btn" 
-              onClick={() => user ? null : setShowLoginModal(true)}
+            <button
+              className="action-btn account-btn"
+              onClick={() => (user ? null : setShowLoginModal(true))}
               type="button"
-              title={user ? `Logged in as ${user.name || 'User'}` : 'Login to account'}
-              aria-label={user ? `Account menu for ${user.name || 'User'}` : 'Login to account'}
+              title={
+                user
+                  ? `Logged in as ${user.name || "User"}`
+                  : "Login to account"
+              }
+              aria-label={
+                user
+                  ? `Account menu for ${user.name || "User"}`
+                  : "Login to account"
+              }
             >
               {user ? (
                 <div className="user-avatar">
-                  {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                  {user.name ? user.name.charAt(0).toUpperCase() : "U"}
                 </div>
               ) : (
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
+                <svg
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
                 </svg>
               )}
             </button>
 
             {/* Desktop Admin/Add Plant Button */}
             {!isMobile && (
-              <button 
-                className={`admin-btn ${showAddForm ? 'active' : ''} ${isAdmin() ? 'authenticated' : 'login'}`}
+              <button
+                className={`admin-btn ${showAddForm ? "active" : ""} ${
+                  isAdmin() ? "authenticated" : "login"
+                }`}
                 onClick={handleAdminClick}
                 type="button"
-                title={isAdmin() ? (showAddForm ? 'Close add plant form' : 'Open add plant form') : 'Admin login'}
+                title={
+                  isAdmin()
+                    ? showAddForm
+                      ? "Close add plant form"
+                      : "Open add plant form"
+                    : "Admin login"
+                }
               >
                 <span className="admin-btn-icon">
-                  {!isAdmin() ? 'Login' : showAddForm ? '❌' : '➕'}
+                  {!isAdmin() ? "Login" : showAddForm ? "❌" : "➕"}
                 </span>
                 {getAdminButtonText()}
               </button>
@@ -295,7 +349,7 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
 
             {/* Desktop Logout Button */}
             {!isMobile && user && (
-              <button 
+              <button
                 className="logout-btn"
                 onClick={handleLogout}
                 type="button"
@@ -308,15 +362,21 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
 
             {/* Mobile Menu Toggle */}
             {isMobile && (
-              <button 
+              <button
                 className="mobile-toggle"
                 onClick={handleMobileToggle}
                 type="button"
-                title={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-                aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+                title={isMobileMenuOpen ? "Close menu" : "Open menu"}
+                aria-label={
+                  isMobileMenuOpen
+                    ? "Close navigation menu"
+                    : "Open navigation menu"
+                }
                 aria-expanded={isMobileMenuOpen}
               >
-                <span className={`hamburger ${isMobileMenuOpen ? 'active' : ''}`}>
+                <span
+                  className={`hamburger ${isMobileMenuOpen ? "active" : ""}`}
+                >
                   <span></span>
                   <span></span>
                   <span></span>
@@ -330,31 +390,34 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
         {isMobile && (
           <>
             {/* Mobile Navigation Overlay */}
-            <div 
-              className={`mobile-nav-overlay ${isMobileMenuOpen ? 'open' : ''}`}
+            <div
+              className={`mobile-nav-overlay ${isMobileMenuOpen ? "open" : ""}`}
               onClick={() => setIsMobileMenuOpen(false)}
               aria-hidden="true"
             />
-            
+
             {/* Mobile Navigation Menu */}
-            <nav className={`mobile-nav ${isMobileMenuOpen ? 'open' : ''}`} role="navigation">
+            <nav
+              className={`mobile-nav ${isMobileMenuOpen ? "open" : ""}`}
+              role="navigation"
+            >
               {/* Mobile Nav Header */}
               <div className="mobile-nav-header">
                 <div className="mobile-nav-logo">
-                  <span className="logo-text gradient-text">URVANN</span>
+                  <span className="logo-text gradient-text">GreenMint</span>
                 </div>
                 <div className="mobile-nav-controls">
                   {/* Mobile Theme Toggle */}
-                  <button 
+                  <button
                     className="mobile-theme-toggle"
                     onClick={toggleTheme}
                     type="button"
-                    title={`Switch to ${isDark ? 'light' : 'dark'} theme`}
-                    aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
+                    title={`Switch to ${isDark ? "light" : "dark"} theme`}
+                    aria-label={`Switch to ${isDark ? "light" : "dark"} theme`}
                   >
-                    {isDark ? '☀️' : '🌙'}
+                    {isDark ? "☀️" : "🌙"}
                   </button>
-                  <button 
+                  <button
                     className="mobile-nav-close"
                     onClick={() => setIsMobileMenuOpen(false)}
                     type="button"
@@ -372,14 +435,14 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
                 {user && (
                   <div className="mobile-user-info">
                     <div className="mobile-user-avatar">
-                      {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                      {user.name ? user.name.charAt(0).toUpperCase() : "U"}
                     </div>
                     <div className="mobile-user-details">
                       <p className="mobile-user-name">
-                        Welcome, {user.name || 'User'}!
+                        Welcome, {user.name || "User"}!
                       </p>
                       <p className="mobile-user-role">
-                        {isAdmin() ? ' Admin Account' : 'Plant Lover'}
+                        {isAdmin() ? "Admin Account" : "Plant Lover"}
                       </p>
                     </div>
                   </div>
@@ -388,36 +451,36 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
                 {/* Navigation Links Section */}
                 <div className="mobile-nav-section">
                   <h3 className="mobile-nav-section-title">Navigate</h3>
-                  <button 
-                    onClick={() => scrollToSection('home')} 
+                  <button
+                    onClick={() => scrollToSection("home")}
                     className="mobile-nav-link"
                     type="button"
                   >
-                    <span className="mobile-nav-icon"></span>
+                    <span className="mobile-nav-icon">🏠</span>
                     <span>Home</span>
                   </button>
-                  <button 
-                    onClick={() => scrollToSection('plants-section')} 
+                  <button
+                    onClick={() => scrollToSection("plants-section")}
                     className="mobile-nav-link"
                     type="button"
                   >
-                    <span className="mobile-nav-icon"></span>
+                    <span className="mobile-nav-icon">🌱</span>
                     <span>Products</span>
                   </button>
-                  <button 
-                    onClick={() => scrollToSection('about')} 
+                  <button
+                    onClick={() => scrollToSection("about")}
                     className="mobile-nav-link"
                     type="button"
                   >
-                    <span className="mobile-nav-icon"></span>
+                    <span className="mobile-nav-icon">ℹ️</span>
                     <span>About</span>
                   </button>
-                  <button 
-                    onClick={() => scrollToSection('contact')} 
+                  <button
+                    onClick={() => scrollToSection("contact")}
                     className="mobile-nav-link"
                     type="button"
                   >
-                    <span className="mobile-nav-icon"></span>
+                    <span className="mobile-nav-icon">📞</span>
                     <span>Contact</span>
                   </button>
                 </div>
@@ -430,11 +493,13 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
                       <div className="mobile-cart-info">
                         <div className="cart-items">
                           <span className="cart-count">{totalQuantity}</span>
-                          <span> item{totalQuantity !== 1 ? 's' : ''}</span>
+                          <span> item{totalQuantity !== 1 ? "s" : ""}</span>
                         </div>
-                        <span className="cart-total">₹{cartTotal.toLocaleString()}</span>
+                        <span className="cart-total">
+                          ₹{cartTotal.toLocaleString()}
+                        </span>
                       </div>
-                      <button 
+                      <button
                         className="mobile-view-cart-btn"
                         onClick={() => {
                           setShowCart(true);
@@ -451,9 +516,9 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
                 {/* Action Buttons Section */}
                 <div className="mobile-nav-section">
                   <h3 className="mobile-nav-section-title">Actions</h3>
-                  
+
                   {/* Search Button */}
-                  <button 
+                  <button
                     className="mobile-action-btn search"
                     onClick={() => {
                       handleSearchClick();
@@ -466,20 +531,22 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
                   </button>
 
                   {/* Admin/Add Plant Button */}
-                  <button 
-                    className={`mobile-action-btn admin ${isAdmin() ? 'authenticated' : 'login'} ${showAddForm ? 'active' : ''}`}
+                  <button
+                    className={`mobile-action-btn admin ${
+                      isAdmin() ? "authenticated" : "login"
+                    } ${showAddForm ? "active" : ""}`}
                     onClick={handleAdminClick}
                     type="button"
                   >
                     <span className="mobile-btn-icon">
-                      {!isAdmin() ? '🔐' : showAddForm ? '❌' : '➕'}
+                      {!isAdmin() ? "🔐" : showAddForm ? "❌" : "➕"}
                     </span>
                     <span>{getMobileAdminButtonText()}</span>
                   </button>
 
                   {/* Login/Logout Button */}
                   {!user ? (
-                    <button 
+                    <button
                       className="mobile-action-btn login"
                       onClick={() => {
                         setShowLoginModal(true);
@@ -491,7 +558,7 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
                       <span>Login Account</span>
                     </button>
                   ) : (
-                    <button 
+                    <button
                       className="mobile-action-btn logout"
                       onClick={() => {
                         handleLogout();
@@ -508,7 +575,10 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
                 {/* App Info Footer */}
                 <div className="mobile-nav-footer">
                   <p>Made with 💚 for plant lovers</p>
-                  <small>Version 1.0.0 | {theme.charAt(0).toUpperCase() + theme.slice(1)} Mode</small>
+                  <small>
+                    Version 1.0.0 |{" "}
+                    {theme.charAt(0).toUpperCase() + theme.slice(1)} Mode
+                  </small>
                 </div>
               </div>
             </nav>
@@ -517,17 +587,17 @@ const Header = ({ showAddForm, setShowAddForm, plants }) => {
       </header>
 
       {/* Cart Sidebar Component */}
-      <CartSidebar 
-        isOpen={showCart} 
+      <CartSidebar
+        isOpen={showCart}
         onClose={() => setShowCart(false)}
         items={items}
         total={cartTotal}
       />
 
       {/* Login Modal Component */}
-      <LoginModal 
-        isOpen={showLoginModal} 
-        onClose={() => setShowLoginModal(false)} 
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
       />
     </>
   );
